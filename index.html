@@ -198,6 +198,10 @@ table td {
   text-decoration: underline;
   cursor: pointer;
 }
+
+#flagImg, #subdivisionImg{
+    border: black 1px solid;
+}
 /* el.html('<span style="font-size:16px;font-weight:700;">' + jurisdiction + '</span>').css("font-size", "14px").css("background-color", "white").css("border", "1px solid #b23427").css("color", "#425563").css("padding", "5px"); */
 
 </style>
@@ -206,16 +210,16 @@ table td {
         <h1>🌎 ISO3166 Flag Icons 🌎</h1>
         <h2>A comprehensive collection of all ISO3166-1 and ISO3166-2 flag icons in SVG format.</h2>
     <!-- <a class="headerBtn" href="https://github.com/amckenna41/iso3166-flag-icons"></a> -->
-    <button class="mainBtns" id="githubBtn" onclick="location.href='https://github.com/amckenna41?tab=repositories'" type="button">
+    <button class="mainBtns" id="githubBtn" onclick="location.href='https://github.com/amckenna41/iso3166-flag-icons'" type="button">
         <i class="fa fa-github fa-2x"></i> Github Repository
     </button class="mainBtns" onclick="location.href='https://github.com/amckenna41/flag-icons/archive/main.zip'" type="button">
     <div class="downloadBtn">
-    <button class="mainBtns">
+    <a href="https://github.com/amckenna41/flag-icons/tree/main/iso3166-downloads/iso3166-1-icons.zip" class="mainBtns">
         <i class="fa fa-download"></i> Download ISO3166-1 icons
-    </button>
-    <button class="mainBtns">
+    </a>
+    <a href="" class="mainBtns">
         <i class="fa fa-download"></i> Download ISO3166-2 icons
-    </button>
+    </a>
  
 
 </div>
@@ -228,7 +232,7 @@ table td {
 
 
 <div id="countryOutput">
-    <img id="flagImg" width="25%" height="25%" src="https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/al.svg" style="display: none; margin-right: 20px;"></img>
+    <img id="flagImg" width="25%" height="25%" src="" style="display: none; margin-right: 20px;"></img>
     <img id="subdivisionImg" width="26%" height="26%" src="" style="display: none;"></img>
     <div id="countryTable">
 
@@ -251,19 +255,19 @@ table td {
     </div>
 
     <div style="text-align: center;">
-        <a href="https://www.flagle.vercel.app/">Play Flagle 🚩</a>
+        <a href="https://flagle.vercel.app/" target="_blank">Play Flagle 🚩</a>
     </div>
 <script>
 
 //rest countries api - https://restcountries.com/
 var mapColour = "#93959b";
 var countryColour = "#a4d446";
-const iso3166_1_json_url = "https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/iso3166-1.json";
-const iso3166_2_json_url = "https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/test-2_min.json";
+const iso3166_1_json_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-1.json";
+const iso3166_2_json_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2_min.json";
 
 var iso3166_1_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-1-icons/";
-// var iso3166_2_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
-var iso3166_2_flag_url = "https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/";
+var iso3166_2_flag_url_svg = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
+var iso3166_2_flag_url_other = "https://github.com/amckenna41/iso3166-flag-icons/blob/main/iso3166-2-icons/";
 
 var allISO3166_1_json = {};
 var allISO3166_2_json = {};
@@ -362,14 +366,13 @@ function getImgSrc(country) {
     var imgDiv = $('#flagImg');
     var srcURL = "";
 
-    srcURL = iso3166_1_flag_url + '/' + countryCodes[country] + '.svg';
-    srcURL = "https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/al.svg";
+    srcURL = iso3166_1_flag_url + '/' + countryCodes[country].toLowerCase() + '.svg';
     imgDiv.attr('src', srcURL);
 
     imgDiv.show();
 
 //     var iso3166_1_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-1-icons/";
-// var iso3166_2_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
+// var iso3166_2_flag_url_svg = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
 }
 
 function getSubdivisionSrc(country, subdivision) {
@@ -380,18 +383,51 @@ function getSubdivisionSrc(country, subdivision) {
     $('#subdivisionSelect').val(lookupSubdivision);
     $('#subdivisionSelect').trigger('change');
 
-    srcURL = iso3166_2_flag_url + '/' + countryCodes[country] + '/' + subdivision + '.svg';
+    // srcURL = iso3166_2_flag_url_svg + '/' + countryCodes[country] + '/' + subdivision + '.svg'; //or .png etc 
+    srcURL = iso3166_2_flag_url_svg + '/' + countryCodes[country] + '/' + subdivision; //or .png etc 
+
+    function imageExists(image_url){
+        var http = new XMLHttpRequest();
+        http.open('HEAD', image_url, false);
+        http.send();
+        return http.status != 404;
+    }
+
+    var imgExtensions = ['.png', '.jpg', '.jpeg'];
+
+    if (!imageExists(srcURL + '.svg')) {
+        for (var i=0; i<imgExtensions.length; i++) {
+        console.log(imgExtensions[i])
+        if (imageExists(srcURL + imgExtensions[i])) {
+            // imgFound = true;
+            srcURL = srcURL + imgExtensions[i];
+            break;
+        }
+            }
+    } else {
+        srcURL = srcURL + '.svg';
+    }
+
+
+
+    console.log('url', srcURL)
+    // if (imageExists(srcURL))
+
+    // if (!imgFound) {
+    //     srcURL = "";
+    // }
+
     // srcURL = "https://raw.githubusercontent.com/amckenna41/test-iso3166-icons/main/AD/AD-02.svg"
     imgDiv.attr('src', srcURL);
 
     imgDiv.show();
 
     //     var iso3166_1_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-1-icons/";
-    // var iso3166_2_flag_url = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
+    // var iso3166_2_flag_url_svg = "https://raw.githubusercontent.com/amckenna41/iso3166-flag-icons/main/iso3166-2-icons/";
 
-    var subdivisionInfoDiv1 = document.querySelector("#subdivisionInfo > h3:nth-child(1)");
+    var subdivisionInfoDiv = document.querySelector("#subdivisionInfo > h3:nth-child(1)");
 
-    subdivisionInfoDiv1.innerHTML = rest_iso3166_2_json.subdivisions[lookupSubdivision] + " (" +lookupSubdivision + ")";
+    subdivisionInfoDiv.innerHTML = rest_iso3166_2_json.subdivisions[lookupSubdivision] + " (" +lookupSubdivision + ")";
 }
 
 //get country data from iSheets
@@ -424,6 +460,7 @@ function restCountries(country) {
 
         },
         error: function error() {
+            rest_iso3166_2_json = {};
             return;
         },
         statusCode: {
@@ -468,8 +505,17 @@ function drawCountryTable(countryJson) {
     tbl += '<tbody>';
     tbl += '<tr><td>Full Name</td><td>' + countryJson.name.common + ' (' + countryJson.cca2 + '/' + countryJson.cca3 +')</td></tr>';
     tbl += '<tr><td>Official Name</td><td>' + countryJson.name.official + '</td></tr>';
-    tbl += '<tr><td>Capital City</td><td>' + countryJson.capital + '</td></tr>';
+    
+    tbl += '<td>Capital City</td><td>';
 
+    if (Object.hasOwn(countryJson, 'capital') && countryJson["capital"] != undefined) {
+        tbl += countryJson.capital;
+    } else {
+        tbl += '<span>No listed capital city</span>';;
+    }
+
+    tbl +=  '</td></tr>';;
+    
     // var index = countryJson.subdivisions.indexOf("All Subdivisions");
     // if (index > -1) {
     //     countryJson.subdivisions.splice(index, 1);
@@ -477,7 +523,7 @@ function drawCountryTable(countryJson) {
     tbl += '<td>Subdivisions</td><td>';
     // console.log("countryJson.subdivisions", countryJson.subdivisions)
 
-    if (Object.hasOwn(countryJson, 'subdivisions')) {
+    if (Object.hasOwn(countryJson, 'subdivisions') && countryJson["subdivisions"] != undefined) {
     
         var countrySubdivisions = Object.keys(countryJson.subdivisions).sort();
 
@@ -498,18 +544,35 @@ function drawCountryTable(countryJson) {
     // tbl += Object.keys(countryJson.subdivisions).sort().toString().split(',').join(', ') + '</td></tr>';
     tbl += '<tr><td>Population</td><td>' + countryJson.population.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</td></tr>';
     tbl += '<tr><td>Total Area</td><td>' + countryJson.area.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' km<sub>2</sub></td></tr>';
-    tbl += '<tr><td>Languages</td><td>' + Object.values(countryJson.languages).sort().toString().split(',').join(', ') + '</td></tr>';
+    
+    tbl += '<tr><td>Languages</td><td>'
+
+    if (Object.hasOwn(countryJson, 'languages') && countryJson["languages"] != undefined) {
+        tbl +=  Object.values(countryJson.languages).sort().toString().split(',').join(', ');
+    } else {
+        tbl += 'No languages listed';
+    }
+
+    tbl += '</td></tr>';
+
     tbl += '<tr><td>Timezones</td><td>' + countryJson.timezones.sort().toString().split(',').join(', ') + '</td></tr>';
-    // tbl += '<tr><td>Currencies</td><td>' + Object.values(countryJson.currencies)[0].name.capitalize() + '</td></tr>';
-    tbl += '<tr><td>Currencies</td><td>' + Object.values(countryJson.currencies)[0].name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) + '</td></tr>';
+    
+    tbl += '<tr><td>Currencies</td><td>';
+
+    if (Object.hasOwn(countryJson, 'currencies') && countryJson["currencies"] != undefined) {
+        tbl += Object.values(countryJson.currencies)[0].name.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+    } else {
+        tbl += 'No currencies listed';
+    }
+    tbl += '</td></tr>';
+
     tbl += '<tr><td>Borders</td><td>';
 
-    if (Object.hasOwn(countryJson, 'borders')) {
+    if (Object.hasOwn(countryJson, 'borders') && countryJson["borders"] != undefined) {
         tbl += countryJson.borders.sort().toString().split(',').join(', ')
     } else {
         tbl += 'No borders';
     }
-    tbl += '</td></tr>';
 
     tbl += '<tbody>';
     tbl += '</table>';
@@ -560,7 +623,6 @@ function drawMap(country="") {
     
     
     var marker = getMarkerLatLng(country);
-    var testMarker = getMarkerLatLng("antigua and barbuda")
 
     if (marker.length != 0) {
         markers.push({latLng: marker, name: country, status: 'mrk'});
@@ -687,13 +749,17 @@ $('#countrySelect').on('select2:select', function (e) {
 
 $("#countrySelect").on("select2:select", function (event) {
     lookupCountry = $(this).val();
+    $('#flagImg').hide();
+    $('#subdivisionImg').hide();
+    $('#countryTable').hide();
     drawMap(lookupCountry);
     restCountries(lookupCountry);
     //loader here
     drawSubdivisionsDropdown();
     getImgSrc(lookupCountry);
     drawCountryTable(rest_iso3166_2_json);
-
+    $('#subdivisionInfo').show();
+    $('#countryTable').show();
 
 });
 
