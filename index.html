@@ -106,6 +106,7 @@ table th,
 table td {
   padding: .5em;
   text-align: left;
+  background-color: #e0dfdf;
 }
 
 table th {
@@ -324,25 +325,9 @@ table td {
     <img id="subdivisionImg" width="26%" height="26%" src="" style="display: none;"></img>
     <div id="countryTable">
     </div>
-
-    <!-- download flag buttons -->
-    <div>
-        <!-- <a id="downloadFlagBtn" class="dnbtn" href="" download=""></a> -->
-        <!-- <a id="downloadSubdivFlagBtn" class="dnbtn" href="" download="">Download</a> -->
-    </div>
 </div>
 
-<!-- <link href='https://fonts.googleapis.com/css?family=Prompt' rel='stylesheet'/> -->
-<!-- <p> -->
-    <!-- <a class="dnbtn" id="dnbtn-flag" href="" download=""><i style="margin-right: 1%;" class="fa fa-download"></i>Download</a> -->
-    <!-- <button id="dnbtn-flag" class="dnbtn"><i class="fa fa-download"></i> Download Flag</button> -->
-<!-- </p> -->
-
-<!-- <p>
-    <a id="dnbtn-subdivision-link" href="" download=""></a>
-    <button class="dnbtn" id="dnbtn-subdivision"><i class="fa fa-download"></i> Download Subdivision Flag</button>
-</p> -->
-
+<!-- download flag buttons -->
 <div class="flagDownloadBtns" style="display:flex;">
     <form action="#">
         <input style="display: none;" type="url" placeholder="" required>
@@ -377,11 +362,6 @@ table td {
 </div>
 
 <script>
-
-/** To Do 
- * - Make list of subdivisions in table clickable, subdivisions not in json should not be clickable.
- **/
-
 
 //default colour of map countries and colour of highlighted countries
 var mapColour = "#93959b";
@@ -503,6 +483,8 @@ function getImgSrc(country) {
         $('#flagImg').hide();
         $('#flagImg').hide();
         $('#dnbtn-flag').hide();
+        console.log("getting here etc")
+        $('#subdivisionInfo').hide();
         // $('#subdivisionInfo').hide();
         return;
      }
@@ -706,7 +688,10 @@ function drawCountryTable(countryJson) {
     $("#countryTable").empty();
 
     //if empty json object then return 
-    if (Object.keys(countryJson).length == 0) {
+    if ((Object.keys(countryJson).length == 0) || (lookupCountry.toLowerCase() == "all countries")) {
+        $('#subdivisionInfo').hide();
+        $('#countryTable').hide();
+        $('#flagDownloadBtns').hide();  
         return;
     }
 
@@ -797,11 +782,15 @@ function drawCountryTable(countryJson) {
             lookupSubdivision = this.innerHTML;
             $('#subdivisionSelect').val(lookupSubdivision);
             $('#subdivisionSelect').trigger('change');
-            $('#subdivisionInfo').show();
             // getSubdivisionSrc(countryJson.name.common, this.innerHTML);
             getSubdivisionSrc(lookupCountry, this.innerHTML);
         }, false);
     }
+
+    $('#subdivisionInfo').show();
+    $('#countryTable').show();
+    $('#countryOutput').show();
+    $('#flagDownloadBtns').show();
 }
 
 function drawMap(country="") {
@@ -994,8 +983,9 @@ $("#countrySelect").on("select2:select", function (event) {
     drawSubdivisionsDropdown();
     getImgSrc(lookupCountry);
     drawCountryTable(rest_countries_json);
-    $('#subdivisionInfo').show();
-    $('#countryTable').show();
+    console.log("subdivisionInfo here", subdivisionInfo);
+    // $('#subdivisionInfo').show();
+    // $('#countryTable').show();
     $('#loader').hide();
     $('#dnbtn-flag').show();
 });
